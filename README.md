@@ -74,7 +74,3 @@ pip install pandas numpy matplotlib yfinance
 Run the program:
 
 python main.py
-
-## Author
-
-Shivam Patel
