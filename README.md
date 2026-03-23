@@ -139,7 +139,3 @@ Enter stock ticker symbol (press Enter for AAPL): MSFT
 - The program runs 1000 Monte Carlo simulations.
 - Results will vary slightly each time because the model uses random sampling.
 - If an invalid stock ticker is entered, the program will display an error and exit.
-
-## Author
-
-Shivam Patel
