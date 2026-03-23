@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ import yfinance as yf
 # ------------------------------------
 # PROJECT SETTINGS
 # ------------------------------------
-stock = "AAPL"
+allowed_stocks = ["AAPL", "TSLA", "MSFT", "AMZN"]
 start_date = "2018-01-01"
 end_date = "2024-01-01"
 days = 252
@@ -16,9 +17,26 @@ long_window = 50
 stop_loss_threshold = 0.8
 
 # ------------------------------------
+# USER INPUT FOR STOCK SELECTION
+# ------------------------------------
+print("Available stock options: AAPL, TSLA, MSFT, AMZN")
+stock = input("Enter stock ticker symbol (press Enter for AAPL): ").strip().upper()
+
+if stock == "":
+    stock = "AAPL"
+
+if stock not in allowed_stocks:
+    print("Invalid stock ticker. Please choose only from: AAPL, TSLA, MSFT, AMZN")
+    sys.exit()
+
+# ------------------------------------
 # DOWNLOAD AND PREPARE HISTORICAL DATA
 # ------------------------------------
 data = yf.download(stock, start=start_date, end=end_date)
+
+if data.empty:
+    print("No data found for the selected stock. Please run the program again.")
+    sys.exit()
 
 # Fix multi-index columns if needed
 if isinstance(data.columns, pd.MultiIndex):
@@ -33,6 +51,7 @@ mean_return = data["Daily Return"].mean()
 volatility = data["Daily Return"].std()
 last_price = data["Close"].iloc[-1]
 
+print(f"\nSelected Stock: {stock}")
 print("Mean Daily Return:", mean_return)
 print("Daily Volatility:", volatility)
 
@@ -56,7 +75,7 @@ plt.figure(figsize=(10, 6))
 for sim in range(simulations):
     plt.plot(simulation_results[:, sim], linewidth=0.5)
 
-plt.title("Monte Carlo Simulation of Future Stock Prices")
+plt.title(f"Monte Carlo Simulation of Future Stock Prices ({stock})")
 plt.xlabel("Days")
 plt.ylabel("Price")
 plt.show()
@@ -79,7 +98,7 @@ print("Worst Case Price:", min_price)
 
 plt.figure(figsize=(10, 5))
 plt.hist(final_prices, bins=50)
-plt.title("Distribution of Simulated Future Prices")
+plt.title(f"Distribution of Simulated Future Prices ({stock})")
 plt.xlabel("Final Price After 252 Days")
 plt.ylabel("Frequency")
 plt.show()
@@ -96,7 +115,7 @@ print("Worst Loss:", np.min(buy_and_hold_profits))
 
 plt.figure(figsize=(10, 5))
 plt.hist(buy_and_hold_profits, bins=50)
-plt.title("Buy and Hold Profit Distribution")
+plt.title(f"Buy and Hold Profit Distribution ({stock})")
 plt.xlabel("Profit After 252 Days")
 plt.ylabel("Frequency")
 plt.show()
@@ -136,7 +155,7 @@ print("Worst Loss:", np.min(ma_profits))
 
 plt.figure(figsize=(10, 5))
 plt.hist(ma_profits, bins=50)
-plt.title("Moving Average Strategy Profit Distribution")
+plt.title(f"Moving Average Strategy Profit Distribution ({stock})")
 plt.xlabel("Profit")
 plt.ylabel("Frequency")
 plt.show()
@@ -166,7 +185,7 @@ print("Worst Loss:", np.min(stop_loss_profits))
 
 plt.figure(figsize=(10, 5))
 plt.hist(stop_loss_profits, bins=50)
-plt.title("Stop Loss Strategy Profit Distribution")
+plt.title(f"Stop Loss Strategy Profit Distribution ({stock})")
 plt.xlabel("Profit")
 plt.ylabel("Frequency")
 plt.show()
@@ -189,7 +208,7 @@ worst_losses = [
 # Average profit comparison
 plt.figure(figsize=(10, 5))
 plt.bar(strategy_names, average_profits)
-plt.title("Average Profit Comparison of Trading Strategies")
+plt.title(f"Average Profit Comparison of Trading Strategies ({stock})")
 plt.xlabel("Strategy")
 plt.ylabel("Average Profit")
 plt.show()
@@ -197,7 +216,7 @@ plt.show()
 # Worst loss comparison
 plt.figure(figsize=(10, 5))
 plt.bar(strategy_names, worst_losses)
-plt.title("Worst Loss Comparison of Trading Strategies")
+plt.title(f"Worst Loss Comparison of Trading Strategies ({stock})")
 plt.xlabel("Strategy")
 plt.ylabel("Worst Loss")
 plt.show()
